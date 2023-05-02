@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "kko"
+version = "0.1.0"
+description = ""
+authors = ["kill-your-soul <Platonovdi@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+vkbottle = "^4.3.12"
+pygsheets = "^2.0.6"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
