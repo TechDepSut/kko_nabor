@@ -7,7 +7,7 @@ def save_info(user: User):
     """Save user info to google sheet"""
     lenght = int(len(wks.get_all_records())) + 2
     # wks.update_value(f'A{lenght}', str(datetime.datetime.now()))
-    wks.update_value(f'A{lenght}', user.get_uid())
+    wks.update_value(f'A{lenght}', f'https://vk.com/id{user.get_uid()}')
     wks.update_value(f'B{lenght}', user.get_name())
     wks.update_value(f'C{lenght}', user.get_faculty())
     wks.update_value(f'D{lenght}', user.get_group())
