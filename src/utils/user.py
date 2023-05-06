@@ -54,3 +54,6 @@ class User:
     def get_department(self) -> str:
         return ', '.join(self.department)
     
+    def get_uid(self) -> str:
+        return self.uid
+    
