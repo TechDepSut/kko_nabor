@@ -1,5 +1,6 @@
 class User:
-    def __init__(self) -> None:
+    def __init__(self, uid: str) -> None:
+        self.uid = uid
         self.name = str()
         self.faculty = str()
         self.group = str()

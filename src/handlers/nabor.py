@@ -14,6 +14,7 @@ class Nabor(BaseStateGroup):
     other_group = 5
     old_group = 6
     depatament = 7
+    end = 8
 
 
 yes_no_keyboard = (
@@ -60,7 +61,7 @@ async def fio(message: Message):
     await message.answer(
         "Чтобы подать заявку в ККО, нужно ответить на несколько следующих вопросов."
     )
-    user = User()
+    user = User(message.from_id)
     await message.answer("Введи ФИО")
     await state_dispancer.set(message.peer_id, Nabor.fio, user=user)
 
@@ -108,7 +109,7 @@ async def end(message: Message):
         user: User | None = message.state_peer.payload["user"]
         print(user.get_department())
         save_info(user)
-        await state_dispancer.set(message.peer_id, None)
+        await state_dispancer.delete(message.peer_id)
         return
     user: User | None = message.state_peer.payload["user"]
     if user.get_old_group() is None:

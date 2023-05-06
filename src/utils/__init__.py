@@ -1,6 +1,5 @@
 import os
 import pygsheets
-import threading
 
 
 service_file = os.environ.get("service_file")
