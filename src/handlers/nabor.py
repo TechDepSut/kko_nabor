@@ -17,12 +17,7 @@ class Nabor(BaseStateGroup):
     end = 8
 
 
-yes_no_keyboard = (
-    Keyboard(one_time=True)
-    .add(Text("Да"))
-    .row()
-    .add(Text("Нет"))
-)
+yes_no_keyboard = Keyboard(one_time=True).add(Text("Да")).row().add(Text("Нет"))
 
 
 depatament_keyboard = (
@@ -59,10 +54,10 @@ keyboard = (
 @labeler.message(text="Начать")
 async def fio(message: Message):
     await message.answer(
-        "Чтобы подать заявку в ККО, нужно ответить на несколько следующих вопросов."
+        "Чтобы подать заявку, тебе нужно будет ответить на несколько вопросов."
     )
     user = User(message.from_id)
-    await message.answer("Введи ФИО")
+    await message.answer("1️⃣ Введи свое ФИО")
     await state_dispancer.set(message.peer_id, Nabor.fio, user=user)
 
 
@@ -71,41 +66,55 @@ async def faculty(message: Message):
     print(message.state_peer.payload)
     user: User | None = message.state_peer.payload["user"]
     user.set_name(message.text)
-    await message.answer("Выбери свой факультет", keyboard=keyboard)
+    await message.answer("2️⃣ Выбери свой факультет", keyboard=keyboard)
     await state_dispancer.set(message.peer_id, Nabor.faculty, user=user)
+
 
 @labeler.message(state=Nabor.faculty)
 async def group(message: Message):
     user: User | None = message.state_peer.payload["user"]
     user.set_faculty(message.text)
-    await message.answer("Номер академической группы")
+    await message.answer("3️⃣ Введи номер своей группы")
     await state_dispancer.set(message.peer_id, Nabor.group, user=user)
+
 
 @labeler.message(state=Nabor.group)
 async def why(message: Message):
     user: User | None = message.state_peer.payload["user"]
     user.set_group(message.text)
-    await message.answer("Почему хочешь в ККО?")
+    await message.answer("4️⃣ Расскажи, почему ты хочешь попасть в команду Комитета?")
     await state_dispancer.set(message.peer_id, Nabor.why, user=user)
+
 
 @labeler.message(state=Nabor.why)
 async def other_group(message: Message):
     user: User | None = message.state_peer.payload["user"]
     user.set_why(message.text)
-    await message.answer("В каких подразделениях ты состоишь кроме ККО?")
+    await message.answer(
+        "5️⃣ В каких подразделениях Студенческого совета ты состоишь сейчас?"
+    )
     await state_dispancer.set(message.peer_id, Nabor.other_group, user=user)
+
 
 @labeler.message(state=Nabor.other_group)
 async def depatament(message: Message):
     user: User | None = message.state_peer.payload["user"]
     user.set_other_group(message.text)
-    await message.answer("В каком подразделении ты состоял?")
+    await message.answer("6️⃣ А в каких подразделениях студсовета состоял раньше?")
     await state_dispancer.set(message.peer_id, Nabor.old_group, user=user)
+
 
 @labeler.message(state=Nabor.old_group)
 async def end(message: Message):
     if message.text == "Нет":
-        await message.answer("Спасибо за заявку")
+        await message.answer(
+            """Рады познакомиться и спасибо тебе за заявку!
+
+В скором времени представитель Комитета свяжется с тобой, чтобы назначить дату собеседования и выдать тестовое задание.
+
+Если позже захочешь заполнить заявку в еще один отдел Комитета, нажми кнопку «Начать» ещё раз
+"""
+        )
         user: User | None = message.state_peer.payload["user"]
         print(user.get_department())
         save_info(user)
@@ -114,7 +123,9 @@ async def end(message: Message):
     user: User | None = message.state_peer.payload["user"]
     if user.get_old_group() is None:
         user.set_old_group(message.text)
-    await message.answer("В какой отдел кко ты хочешь попасть?", keyboard=depatament_keyboard)
+    await message.answer(
+        "7️⃣ В какой отдел Комитета ты хочешь попасть?", keyboard=depatament_keyboard
+    )
     await state_dispancer.set(message.peer_id, Nabor.depatament, user=user)
 
 
@@ -122,10 +133,12 @@ async def end(message: Message):
 async def end(message: Message):
     user: User | None = message.state_peer.payload["user"]
     user.set_department(message.text)
-    await message.answer("Хочешь еще куда-то попасть?", keyboard=yes_no_keyboard)
+    await message.answer("Хочешь выбрать еще один отдел?", keyboard=yes_no_keyboard)
     await state_dispancer.set(message.peer_id, Nabor.old_group, user=user)
 
 
 @labeler.message()
 async def end(message: Message):
-    await message.answer("Спасибо за заявку, если хотите начать заново, то напишите \"Начать\"")
+    await message.answer(
+        'Спасибо за заявку, если хотите начать заново, то напишите "Начать"'
+    )
